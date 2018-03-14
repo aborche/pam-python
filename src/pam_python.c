@@ -46,6 +46,21 @@
 #include <structmember.h>
 #include <syslog.h>
 
+#if PY_VERSION_HEX >= 0x03000000
+#define PyClass_Check(obj) PyObject_IsInstance(obj, (PyObject *)&PyType_Type)
+#define PyString_AsString(obj) PyBytes_AsString(PyUnicode_Encode(PyUnicode_AsUnicode(obj), PyUnicode_GetSize(obj), "ascii", NULL))
+#define PyString_Type PyUnicode_Type
+#define PyString_Check PyUnicode_Check
+#define PyInt_FromLong PyLong_FromLong
+#define PyString_FromString PyUnicode_FromString
+#define PyString_FromStringAndSize PyUnicode_FromStringAndSize
+#define PyString_AS_STRING PyString_AsString
+#define PyInt_AsLong PyLong_AsLong
+#define PyString_Size PyUnicode_GetSize
+#define PyString_GET_SIZE PyString_Size
+#define PyInt_Check PyLong_Check
+#endif
+
 #ifndef	MODULE_NAME
 #define	MODULE_NAME		"libpam_python"
 #endif
@@ -2226,7 +2241,7 @@ static int load_user_module(
     goto error_exit;
   }
   dot = strrchr(user_module_name, '.');
-  if (dot != 0 || strcmp(dot, ".py") == 0)
+  if (dot != 0 && strcmp(dot, ".py") == 0)
     *dot = '\0';
   *user_module = PyModule_New(user_module_name);
   if (*user_module == 0)
@@ -2496,7 +2511,7 @@ static int get_pamHandle(
   pamHandle->pamh = pamh;
   pamHandle->py_initialized = do_initialize;
   pamHandle->exception = PyErr_NewException(
-    PAMHANDLE_NAME "." PAMHANDLEEXCEPTION_NAME, PyExc_StandardError, NULL);
+    PAMHANDLE_NAME "." PAMHANDLEEXCEPTION_NAME, PyExc_SystemError, NULL);
   if (pamHandle->exception == NULL)
     goto error_exit;
   /*
@@ -2516,8 +2531,8 @@ static int get_pamHandle(
     pam_result = syslog_path_exception(module_path, "Can't create pamh.env");
     goto error_exit;
   }
-  pamEnv->ob_type->tp_as_mapping = &PamEnv_as_mapping;
-  pamEnv->ob_type->tp_iter = PamEnv_iter;
+  Py_TYPE(pamEnv)->tp_as_mapping = &PamEnv_as_mapping;
+  Py_TYPE(pamEnv)->tp_iter = PamEnv_iter;
   pamEnv->pamHandle = pamHandle;
   pamEnv->pamEnvIter_type = newHeapType(
       pamHandle_module,			/* __module__ */
