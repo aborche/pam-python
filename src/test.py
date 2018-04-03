@@ -72,7 +72,7 @@ def test_basic_calls(results, who, pamh, flags, argv):
   return pamh.PAM_SUCCESS
   
 def run_basic_calls(results):
-  pam = PAM.pam()
+  pam = pam.pam()
   pam.start(TEST_PAM_MODULE, TEST_PAM_USER, pam_conv)
   pam.authenticate(0)
   pam.acct_mgmt()
@@ -186,7 +186,7 @@ def test_constants(results, who, pamh, flags, argv):
   return pamh.PAM_SUCCESS
 
 def run_constants(results):
-  pam = PAM.pam()
+  pam = pam.pam()
   pam.start(TEST_PAM_MODULE, TEST_PAM_USER, pam_conv)
   pam.authenticate(0)
   pam.close_session()
@@ -253,7 +253,7 @@ def test_environment(results, who, pamh, flags, argv):
   return pamh.PAM_SUCCESS
 
 def run_environment(results):
-  pam = PAM.pam()
+  pam = pam.pam()
   pam.start(TEST_PAM_MODULE, TEST_PAM_USER, pam_conv)
   pam.authenticate(0)
   pam.putenv("x1=1")
@@ -290,7 +290,7 @@ def test_strerror(results, who, pamh, flags, argv):
   return pamh.PAM_SUCCESS
 
 def run_strerror(results):
-  pam = PAM.pam()
+  pam = pam.pam()
   pam.start(TEST_PAM_MODULE, TEST_PAM_USER, pam_conv)
   pam.authenticate(0)
   del pam
@@ -337,7 +337,7 @@ def test_items(results, who, pamh, flags, argv):
   return pamh.PAM_SUCCESS
 
 def run_items(results):
-  pam = PAM.pam()
+  pam = pam.pam()
   pam.start(TEST_PAM_MODULE, TEST_PAM_USER, pam_conv)
   pam.authenticate(0)
   items = {
@@ -419,7 +419,7 @@ def test_xauthdata(results, who, pamh, flags, argv):
   return pamh.PAM_SUCCESS
 
 def run_xauthdata(results):
-  pam = PAM.pam()
+  pam = pam.pam()
   pam.start(TEST_PAM_MODULE, TEST_PAM_USER, pam_conv)
   pam.authenticate(0)
   #
@@ -455,7 +455,7 @@ def test_no_sm_end(results, who, pamh, flags, argv):
   return pamh.PAM_SUCCESS
 
 def run_no_sm_end(results):
-  pam = PAM.pam()
+  pam = pam.pam()
   pam.start(TEST_PAM_MODULE, TEST_PAM_USER, pam_conv)
   pam.authenticate(0)
   del pam
@@ -495,7 +495,7 @@ def test_conv(results, who, pamh, flags, argv):
   return pamh.PAM_SUCCESS
 
 def run_conv(results):
-  pam = PAM.pam()
+  pam = pam.pam()
   pam.start(TEST_PAM_MODULE, TEST_PAM_USER, pam_conv)
   pam.authenticate(0)
   pam.acct_mgmt()
@@ -515,16 +515,16 @@ def test_pamerr(results, who, pamh, flags, argv):
   return results[-1]
 
 def run_pamerr(results):
-  pam = PAM.pam()
+  pam = pam.pam()
   pam.start(TEST_PAM_MODULE, TEST_PAM_USER, pam_conv)
-  for err in range(0, PAM._PAM_RETURN_VALUES):
+  for err in range(0, pam._PAM_RETURN_VALUES):
     results.append(err)
     try:
       pam.authenticate(0)
-    except PAM.error, e:
+    except pam.error, e:
       results[-1] = -e.args[1]
   del pam
-  expected_results = [-r for r in range(PAM._PAM_RETURN_VALUES)]
+  expected_results = [-r for r in range(pam._PAM_RETURN_VALUES)]
   expected_results[25] = -6
   assert_results(expected_results, results)
 
@@ -536,7 +536,7 @@ def test_fail_delay(results, who, pamh, flags, argv):
   return pamh.PAM_SUCCESS
 
 def run_fail_delay(results):
-  pam = PAM.pam()
+  pam = pam.pam()
   pam.start(TEST_PAM_MODULE, TEST_PAM_USER, pam_conv)
   pam.authenticate(0)
   del pam
@@ -564,7 +564,7 @@ def test_exceptions(results, who, pamh, flags, argv):
   return pamh.PAM_SUCCESS
 
 def run_exceptions(results):
-  pam = PAM.pam()
+  pam = pam.pam()
   pam.start(TEST_PAM_MODULE, TEST_PAM_USER, pam_conv)
   pam.authenticate(0)
   del pam
@@ -587,7 +587,7 @@ def test_absent(results, who, pamh, flags, argv):
   return pamh.PAM_SUCCESS
 
 def run_absent(results):
-  pam = PAM.pam()
+  pam = pam.pam()
   pam.start(TEST_PAM_MODULE, TEST_PAM_USER, pam_conv)
   pam.authenticate(0)
   funcs = (

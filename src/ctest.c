@@ -44,8 +44,10 @@ static void call_pam(
     int (*func)(pam_handle_t*, int))
 {
   int pam_result = (*func)(pamh, 0);
-
   if (pam_result == PAM_SUCCESS)
+  fprintf(
+    stderr, "%s passed: %d %s\n",
+    who, pam_result, pam_strerror(pamh, pam_result));
     return;
   fprintf(
     stderr, "%s failed: %d %s\n",
@@ -71,12 +73,16 @@ static void walk_dlls(struct walk_info* walk_info)
 static int dl_walk(struct dl_phdr_info* info, size_t size, void* data)
 {
   struct walk_info*		walk_info = data;
-
   (void)size;
+  printf("search /pam_python.so\n");
+  if (info->dlpi_name == NULL)
+    return 0;
   if (strstr(info->dlpi_name, "/pam_python.so") != 0)
     walk_info->libpam_python_seen = 1;
+  printf("search /libpython\n");
   if (strstr(info->dlpi_name, "/libpython") != 0)
     walk_info->python_seen = 1;
+  printf("exit from dl_walk\n");
   return 0;
 }
 
@@ -93,8 +99,8 @@ int main(int argc, char **argv)
   int			exit_status;
   struct pam_conv	convstruct;
   pam_handle_t*		pamh;
-  struct walk_info	walk_info_before;
-  struct walk_info	walk_info_after;
+  //struct walk_info	walk_info_before;
+  //struct walk_info	walk_info_after;
 
   (void)argc;
   (void)argv;
@@ -107,7 +113,7 @@ int main(int argc, char **argv)
       "  available to PAM But it doesn't appear to be in /etc/pam.d.\n"
     );
   }
-  printf("Testing calls from C");
+  printf("Testing calls from C\n");
   fflush(stdout);
   convstruct.conv = conv;
   convstruct.appdata_ptr = 0;
@@ -122,12 +128,13 @@ int main(int argc, char **argv)
   call_pam(&exit_status, "pam_acct_mgmt", pamh, pam_acct_mgmt);
   call_pam(&exit_status, "pam_open_session", pamh, pam_open_session);
   call_pam(&exit_status, "pam_close_session", pamh, pam_close_session);
-  walk_dlls(&walk_info_before);
+  
+  //walk_dlls(&walk_info_before);
   call_pam(&exit_status, "pam_end", pamh, pam_end);
   if (exit_status == 0)
     printf(" OK\n");
-  walk_dlls(&walk_info_after);
-  printf("Testing dll load/unload ");
+  //walk_dlls(&walk_info_after);
+  /* printf("Testing dll load/unload ");
   if (!walk_info_before.libpam_python_seen)
   {
     fprintf(stderr, "It looks like pam_python.so wasn't loaded!\n");
@@ -150,5 +157,7 @@ int main(int argc, char **argv)
   }
   else
     printf("OK\n");
+  //exit_status = 0;
+  */
   return exit_status;
 }

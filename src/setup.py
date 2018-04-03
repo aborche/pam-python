@@ -1,4 +1,5 @@
-#!/usr/bin/python3 -W default
+#!/usr/bin/env python2
+#" -W default
 import warnings; warnings.simplefilter('default')
 
 import distutils.sysconfig
@@ -25,7 +26,7 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
   "Topic :: System :: Systems Administration :: Authentication/Directory"]
 
-if not "Py_DEBUG" in os.environ:
+if not os.environ.has_key("Py_DEBUG"):
   Py_DEBUG = []
 else:
   Py_DEBUG = [('Py_DEBUG',1)]
@@ -38,7 +39,7 @@ ext_modules = [
       include_dirs = [],
       library_dirs=[],
       define_macros=[('LIBPYTHON_SO','"'+libpython_so+'"')] + Py_DEBUG,
-      libraries=["pam"],
+      libraries=["pam","python%d.%d" % sys.version_info[:2]],
     ), ]
 
 setup(
